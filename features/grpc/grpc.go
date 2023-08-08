@@ -23,7 +23,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/planetscale/vtprotobuf/generator"
+	"github.com/DataDog/vtprotobuf/generator"
 
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/types/descriptorpb"

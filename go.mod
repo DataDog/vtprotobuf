@@ -1,4 +1,4 @@
-module github.com/planetscale/vtprotobuf
+module github.com/DataDog/vtprotobuf
 
 go 1.16
 

@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/planetscale/vtprotobuf/generator"
+	"github.com/DataDog/vtprotobuf/generator"
 )
 
 func init() {
