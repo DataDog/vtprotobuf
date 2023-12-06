@@ -1,7 +1,7 @@
 syntax = "proto3";
 option go_package = "testproto/pool";
 
-import "github.com/planetscale/vtprotobuf/vtproto/ext.proto";
+import "github.com/DataDog/vtprotobuf/vtproto/ext.proto";
 
 
 message OneofTest {

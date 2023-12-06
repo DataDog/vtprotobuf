@@ -14,26 +14,25 @@ The following features can be generated:
 
 - `equal`: generates the following helper methods
 
-    - `func (this *YourProto) EqualVT(that *YourProto) bool`: this function behaves almost identically to calling `proto.Equal(this, that)` on messages, except the equality calculation is fully unrolled and does not use reflection. This helper function can be used directly.
+  - `func (this *YourProto) EqualVT(that *YourProto) bool`: this function behaves almost identically to calling `proto.Equal(this, that)` on messages, except the equality calculation is fully unrolled and does not use reflection. This helper function can be used directly.
 
-    - `func (this *YourProto) EqualMessageVT(thatMsg proto.Message) bool`: this function behaves like the above `this.EqualVT(that)`, but allows comparing against arbitrary proto messages. If `thatMsg` is not of type `*YourProto`, false is returned. The uniform signature provided by this method allows accessing this method via type assertions even if the message type is not known at compile time. This allows implementing a generic `func EqualVT(proto.Message, proto.Message) bool` without reflection.
+  - `func (this *YourProto) EqualMessageVT(thatMsg proto.Message) bool`: this function behaves like the above `this.EqualVT(that)`, but allows comparing against arbitrary proto messages. If `thatMsg` is not of type `*YourProto`, false is returned. The uniform signature provided by this method allows accessing this method via type assertions even if the message type is not known at compile time. This allows implementing a generic `func EqualVT(proto.Message, proto.Message) bool` without reflection.
 
 - `marshal`: generates the following helper methods
 
-    - `func (p *YourProto) MarshalVT() ([]byte, error)`: this function behaves identically to calling `proto.Marshal(p)`, except the actual marshalling has been fully unrolled and does not use reflection or allocate memory. This function simply allocates a properly sized buffer by calling `SizeVT` on the message and then uses `MarshalToSizedBufferVT` to marshal to it.
+  - `func (p *YourProto) MarshalVT() ([]byte, error)`: this function behaves identically to calling `proto.Marshal(p)`, except the actual marshalling has been fully unrolled and does not use reflection or allocate memory. This function simply allocates a properly sized buffer by calling `SizeVT` on the message and then uses `MarshalToSizedBufferVT` to marshal to it.
 
-    - `func (p *YourProto) MarshalToVT(data []byte) (int, error)`: this function can be used to marshal a message to an existing buffer. The buffer must be large enough to hold the marshalled message, otherwise this function will panic. It returns the number of bytes marshalled. This function is useful e.g. when using memory pooling to re-use serialization buffers.
+  - `func (p *YourProto) MarshalToVT(data []byte) (int, error)`: this function can be used to marshal a message to an existing buffer. The buffer must be large enough to hold the marshalled message, otherwise this function will panic. It returns the number of bytes marshalled. This function is useful e.g. when using memory pooling to re-use serialization buffers.
 
-    - `func (p *YourProto) MarshalToSizedBufferVT(data []byte) (int, error)`: this function behaves like `MarshalTo` but expects that the input buffer has the exact size required to hold the message, otherwise it will panic.
+  - `func (p *YourProto) MarshalToSizedBufferVT(data []byte) (int, error)`: this function behaves like `MarshalTo` but expects that the input buffer has the exact size required to hold the message, otherwise it will panic.
 
 - `marshal_strict`: generates the following helper methods
 
-    - `func (p *YourProto) MarshalVTStrict() ([]byte, error)`: this function behaves like `MarshalVT`, except fields are marshalled in a strict order by field's numbers they were declared in .proto file.
+  - `func (p *YourProto) MarshalVTStrict() ([]byte, error)`: this function behaves like `MarshalVT`, except fields are marshalled in a strict order by field's numbers they were declared in .proto file.
 
-    - `func (p *YourProto) MarshalToVTStrict(data []byte) (int, error)`: this function behaves like `MarshalToVT`, except fields are marshalled in a strict order by field's numbers they were declared in .proto file.
+  - `func (p *YourProto) MarshalToVTStrict(data []byte) (int, error)`: this function behaves like `MarshalToVT`, except fields are marshalled in a strict order by field's numbers they were declared in .proto file.
 
-    - `func (p *YourProto) MarshalToSizedBufferVTStrict(data []byte) (int, error)`: this function behaves like `MarshalToSizedBufferVT`, except fields are marshalled in a strict order by field's numbers they were declared in .proto file.
-
+  - `func (p *YourProto) MarshalToSizedBufferVTStrict(data []byte) (int, error)`: this function behaves like `MarshalToSizedBufferVT`, except fields are marshalled in a strict order by field's numbers they were declared in .proto file.
 
 - `unmarshal`: generates a `func (p *YourProto) UnmarshalVT(data []byte)` that behaves similarly to calling `proto.Unmarshal(data, p)` on the message, except the unmarshalling is performed by unrolled codegen without using reflection and allocating as little memory as possible. If the receiver `p` is **not** fully zeroed-out, the unmarshal call will actually behave like `proto.Merge(data, p)`. This is because the `proto.Unmarshal` in the ProtoBuf API is implemented by resetting the destination message and then calling `proto.Merge` on it. To ensure proper `Unmarshal` semantics, ensure you've called `proto.Reset` on your message before calling `UnmarshalVT`, or that your message has been newly allocated.
 
@@ -41,73 +40,73 @@ The following features can be generated:
 
 - `pool`: generates the following helper methods
 
-    - `func (p *YourProto) ResetVT()`: this function behaves similarly to `proto.Reset(p)`, except it keeps as much memory as possible available on the message, so that further calls to `UnmarshalVT` on the same message will need to allocate less memory. This an API meant to be used with memory pools and does not need to be used directly.
+  - `func (p *YourProto) ResetVT()`: this function behaves similarly to `proto.Reset(p)`, except it keeps as much memory as possible available on the message, so that further calls to `UnmarshalVT` on the same message will need to allocate less memory. This an API meant to be used with memory pools and does not need to be used directly.
 
-    - `func (p *YourProto) ReturnToVTPool()`: this function returns message `p` to a local memory pool so it can be reused later. It clears the object properly with `ResetVT` before storing it on the pool. This method should only be used on messages that were obtained from a memory pool by calling `YourProtoFromVTPool`. **Using `p` after calling this method will lead to undefined behavior**.
+  - `func (p *YourProto) ReturnToVTPool()`: this function returns message `p` to a local memory pool so it can be reused later. It clears the object properly with `ResetVT` before storing it on the pool. This method should only be used on messages that were obtained from a memory pool by calling `YourProtoFromVTPool`. **Using `p` after calling this method will lead to undefined behavior**.
 
-    - `func YourProtoFromVTPool() *YourProto`: this function returns a `YourProto` message from a local memory pool, or allocates a new one if the pool is currently empty. The returned message is always empty and ready to be used (e.g. by calling `UnmarshalVT` on it). Once the message has been processed, it must be returned to the memory pool by calling `ReturnToVTPool()` on it. Returning the message to the pool is not mandatory (it does not leak memory), but if you don't return it, that defeats the whole point of memory pooling.
+  - `func YourProtoFromVTPool() *YourProto`: this function returns a `YourProto` message from a local memory pool, or allocates a new one if the pool is currently empty. The returned message is always empty and ready to be used (e.g. by calling `UnmarshalVT` on it). Once the message has been processed, it must be returned to the memory pool by calling `ReturnToVTPool()` on it. Returning the message to the pool is not mandatory (it does not leak memory), but if you don't return it, that defeats the whole point of memory pooling.
 
 - `clone`: generates the following helper methods
 
-    - `func (p *YourProto) CloneVT() *YourProto`: this function behaves similarly to calling `proto.Clone(p)` on the message, except the cloning is performed by unrolled codegen without using reflection. If the receiver `p` is `nil` a typed `nil` is returned.
+  - `func (p *YourProto) CloneVT() *YourProto`: this function behaves similarly to calling `proto.Clone(p)` on the message, except the cloning is performed by unrolled codegen without using reflection. If the receiver `p` is `nil` a typed `nil` is returned.
 
-    - `func (p *YourProto) CloneMessageVT() proto.Message`: this function behaves like the above `p.CloneVT()`, but provides a uniform signature in order to be accessible via type assertions even if the type is not known at compile time. This allows implementing a generic `func CloneVT(proto.Message)` without reflection. If the receiver `p` is `nil`, a typed `nil` pointer of the message type will be returned inside a `proto.Message` interface.
+  - `func (p *YourProto) CloneMessageVT() proto.Message`: this function behaves like the above `p.CloneVT()`, but provides a uniform signature in order to be accessible via type assertions even if the type is not known at compile time. This allows implementing a generic `func CloneVT(proto.Message)` without reflection. If the receiver `p` is `nil`, a typed `nil` pointer of the message type will be returned inside a `proto.Message` interface.
 
 ## Usage
 
 1. Install `protoc-gen-go-vtproto`:
 
-    ```
-    go install github.com/planetscale/vtprotobuf/cmd/protoc-gen-go-vtproto@latest
-    ```
+```
+go install github.com/DataDog/vtprotobuf/cmd/protoc-gen-go-vtproto@latest
+```
 
 2. Ensure your project is already using the ProtoBuf v2 API (i.e. `google.golang.org/protobuf`). The `vtprotobuf` compiler is not compatible with APIv1 generated code.
 
 3. Update your `protoc` generator to use the new plug-in. Example from Vitess:
 
-    ```
-    for name in $(PROTO_SRC_NAMES); do \
-        $(VTROOT)/bin/protoc \
-        --go_out=. --plugin protoc-gen-go="${GOBIN}/protoc-gen-go" \
-        --go-grpc_out=. --plugin protoc-gen-go-grpc="${GOBIN}/protoc-gen-go-grpc" \
-        --go-vtproto_out=. --plugin protoc-gen-go-vtproto="${GOBIN}/protoc-gen-go-vtproto" \
-        --go-vtproto_opt=features=marshal+unmarshal+size \
-        proto/$${name}.proto; \
-    done
-    ```
+   ```
+   for name in $(PROTO_SRC_NAMES); do \
+       $(VTROOT)/bin/protoc \
+       --go_out=. --plugin protoc-gen-go="${GOBIN}/protoc-gen-go" \
+       --go-grpc_out=. --plugin protoc-gen-go-grpc="${GOBIN}/protoc-gen-go-grpc" \
+       --go-vtproto_out=. --plugin protoc-gen-go-vtproto="${GOBIN}/protoc-gen-go-vtproto" \
+       --go-vtproto_opt=features=marshal+unmarshal+size \
+       proto/$${name}.proto; \
+   done
+   ```
 
-    Note that the `vtproto` compiler runs like an auxiliary plug-in to the `protoc-gen-go` in APIv2, just like the new GRPC compiler plug-in, `protoc-gen-go-grpc`. You need to run it alongside the upstream generator, not as a replacement.
+   Note that the `vtproto` compiler runs like an auxiliary plug-in to the `protoc-gen-go` in APIv2, just like the new GRPC compiler plug-in, `protoc-gen-go-grpc`. You need to run it alongside the upstream generator, not as a replacement.
 
 4. (Optional) Pass the features that you want to generate as `--go-vtproto_opt`. If no features are given, all the codegen steps will be performed.
 
 5. (Optional) If you have enabled the `pool` option, you need to manually specify which ProtoBuf objects will be pooled.
 
-    - You can tag messages explicitly in the `.proto` files with `option (vtproto.mempool)`:
+   - You can tag messages explicitly in the `.proto` files with `option (vtproto.mempool)`:
 
-    ```proto
-    syntax = "proto3";
+   ```proto
+   syntax = "proto3";
 
-    package app;
-    option go_package = "app";
+   package app;
+   option go_package = "app";
 
-    import "github.com/planetscale/vtprotobuf/vtproto/ext.proto";
+   import "github.com/DataDog/vtprotobuf/vtproto/ext.proto";
 
-    message SampleMessage {
-        option (vtproto.mempool) = true; // Enable memory pooling
-        string name = 1;
-        optional string project_id = 2;
-        // ...
-    }
-    ```
+   message SampleMessage {
+       option (vtproto.mempool) = true; // Enable memory pooling
+       string name = 1;
+       optional string project_id = 2;
+       // ...
+   }
+   ```
 
-    - Alternatively, you can enumerate the pooled objects with `--go-vtproto_opt=pool=<import>.<message>` flags passed via the CLI:
+   - Alternatively, you can enumerate the pooled objects with `--go-vtproto_opt=pool=<import>.<message>` flags passed via the CLI:
 
-    ```
-        $(VTROOT)/bin/protoc ... \
-            --go-vtproto_opt=features=marshal+unmarshal+size+pool \
-            --go-vtproto_opt=pool=vitess.io/vitess/go/vt/proto/query.Row \
-            --go-vtproto_opt=pool=vitess.io/vitess/go/vt/proto/binlogdata.VStreamRowsResponse \
-    ```
+   ```
+       $(VTROOT)/bin/protoc ... \
+           --go-vtproto_opt=features=marshal+unmarshal+size+pool \
+           --go-vtproto_opt=pool=vitess.io/vitess/go/vt/proto/query.Row \
+           --go-vtproto_opt=pool=vitess.io/vitess/go/vt/proto/binlogdata.VStreamRowsResponse \
+   ```
 
 6. Compile the `.proto` files in your project. You should see `_vtproto.pb.go` files next to the `.pb.go` and `_grpc.pb.go` files that were already being generated.
 
@@ -125,13 +124,13 @@ The `protoc-gen-go-vtproto` compiler does not overwrite any of the default marsh
 
 ### `vtprotobuf` with GRPC
 
-To use `vtprotobuf` with the new versions of GRPC, you need to register the codec provided by the `github.com/planetscale/vtprotobuf/codec/grpc` package.
+To use `vtprotobuf` with the new versions of GRPC, you need to register the codec provided by the `github.com/DataDog/vtprotobuf/codec/grpc` package.
 
 ```go
 package servenv
 
 import (
-	"github.com/planetscale/vtprotobuf/codec/grpc"
+	"github.com/DataDog/vtprotobuf/codec/grpc"
 	"google.golang.org/grpc/encoding"
 	_ "google.golang.org/grpc/encoding/proto"
 )
@@ -163,15 +162,16 @@ done; \
 
 ### DRPC
 
-To use `vtprotobuf` as a DRPC encoding, simply pass `github.com/planetscale/vtprotobuf/codec/drpc` as the `protolib` flag in your `protoc-gen-go-drpc` invocation.
+To use `vtprotobuf` as a DRPC encoding, simply pass `github.com/DataDog/vtprotobuf/codec/drpc` as the `protolib` flag in your `protoc-gen-go-drpc` invocation.
 
 Example:
 
 ```
-protoc --go_out=. --go-vtproto_out=. --go-drpc_out=. --go-drpc_opt=protolib=github.com/planetscale/vtprotobuf/codec/drpc
+protoc --go_out=. --go-vtproto_out=. --go-drpc_out=. --go-drpc_opt=protolib=github.com/DataDog/vtprotobuf/codec/drpc
 ```
 
 ### Connect
+
 To use `vtprotobuf` with Connect simply pass in `connect.WithCodec(grpc.Codec{})` as a connect option to the client and handler constructors.
 
 ```go
@@ -182,7 +182,7 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/foo/bar/pingv1connect"
-	"github.com/planetscale/vtprotobuf/codec/grpc"
+	"github.com/DataDog/vtprotobuf/codec/grpc"
 )
 
 func main() {
@@ -201,7 +201,6 @@ func main() {
 	/// client code here ...
 }
 ```
-
 
 ## Integrating with [`buf`](http://github.com/bufbuild/buf)
 

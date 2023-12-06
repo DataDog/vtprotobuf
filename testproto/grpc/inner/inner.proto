@@ -4,7 +4,7 @@ package inner;
 
 option go_package = "testproto/grpc/inner";
 
-import "github.com/planetscale/vtprotobuf/vtproto/ext.proto";
+import "github.com/DataDog/vtprotobuf/vtproto/ext.proto";
 
 message TestMessageRequest{
   option (vtproto.mempool) = true;

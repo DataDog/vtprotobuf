@@ -4,7 +4,7 @@ option go_package = "testproto/grpc";
 
 
 import "testproto/grpc/inner/inner.proto";
-import "github.com/planetscale/vtprotobuf/vtproto/ext.proto";
+import "github.com/DataDog/vtprotobuf/vtproto/ext.proto";
 
 
 message LocalTestMessageRequest {

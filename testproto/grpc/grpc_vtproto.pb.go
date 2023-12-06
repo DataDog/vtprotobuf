@@ -7,8 +7,8 @@ package grpc
 import (
 	context "context"
 	fmt "fmt"
-	protohelpers "github.com/planetscale/vtprotobuf/protohelpers"
-	inner "github.com/planetscale/vtprotobuf/testproto/grpc/inner"
+	protohelpers "github.com/DataDog/vtprotobuf/protohelpers"
+	inner "github.com/DataDog/vtprotobuf/testproto/grpc/inner"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

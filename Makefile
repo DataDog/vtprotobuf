@@ -32,8 +32,8 @@ gen-include: bin/protoc-gen-go
 		--proto_path=include \
 		--go_out=include --plugin protoc-gen-go="${GOBIN}/protoc-gen-go" \
 		-I$(PROTOBUF_ROOT)/src \
-		github.com/planetscale/vtprotobuf/vtproto/ext.proto
-	mv include/github.com/planetscale/vtprotobuf/vtproto/*.go ./vtproto
+		github.com/DataDog/vtprotobuf/vtproto/ext.proto
+	mv include/github.com/DataDog/vtprotobuf/vtproto/*.go ./vtproto
 
 gen-wkt: bin/protoc-gen-go-vtproto
 	$(PROTOBUF_ROOT)/src/protoc \
@@ -74,9 +74,9 @@ get-grpc-testproto: install
 		-I$(PROTOBUF_ROOT)/src \
 		-I. \
 		--go_opt=paths=source_relative \
-		--go_opt=Mtestproto/grpc/inner/inner.proto=github.com/planetscale/vtprotobuf/testproto/grpc/inner \
+		--go_opt=Mtestproto/grpc/inner/inner.proto=github.com/DataDog/vtprotobuf/testproto/grpc/inner \
 		--go-vtproto_opt=paths=source_relative \
-        --go-vtproto_opt=Mtestproto/grpc/inner/inner.proto=github.com/planetscale/vtprotobuf/testproto/grpc/inner \
+        --go-vtproto_opt=Mtestproto/grpc/inner/inner.proto=github.com/DataDog/vtprotobuf/testproto/grpc/inner \
 		testproto/grpc/inner/inner.proto \
 		testproto/grpc/grpc.proto \
 		|| exit 1;
